@@ -79,7 +79,7 @@ struct ContentView: View {
                 let vector = try await embeddingsManager.fetchEmbedding(for: userInput)
                 embedding = vector
             } catch {
-                errorMessage = "Failed to get embedding: \(error.localizedDescription)"
+                errorMessage = error.localizedDescription
             }
 
             isLoading = false

@@ -23,17 +23,35 @@ class OpenAIEmbeddingsManager {
             "input": text
         ]
         
-        let dataTask = AF
-            .request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .validate()
-            .serializingDecodable(EmbeddingsResponse.self)
-        
-        let response = try await dataTask.value
-        
-        guard let embedding = response.data.first?.embedding else {
-            throw AFError.responseValidationFailed(reason: .dataFileNil)
+        do{
+            let dataTask = AF.request(
+                url,
+                method: .post,
+                parameters: parameters,
+                encoding: JSONEncoding.default,
+                headers: headers
+            )
+                .validate()
+                .serializingDecodable(EmbeddingsResponse.self)
+            
+            let response = try await dataTask.value
+            
+            guard let embedding = response.data.first?.embedding else {
+                throw AFError.responseValidationFailed(reason: .dataFileNil)
+            }
+            return embedding
+            
+        }catch{
+            throw EmbeddingError.requestFailed
         }
-        return embedding
+    }
+}
+
+enum EmbeddingError: LocalizedError {
+    case requestFailed
+    
+    var errorDescription: String? {
+        "Failed to fetch an embedding."
     }
 }
 
